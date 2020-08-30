@@ -11,7 +11,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 // AFireflyCharacter
-
+FString AFireflyCharacter::DefaultAnimBPPath(TEXT("AnimBlueprint'/Game/Mannequin/Animations/ThirdPerson_AnimBP.ThirdPerson_AnimBP'"));
 AFireflyCharacter::AFireflyCharacter()
 {
 	// Set size for collision capsule
@@ -45,8 +45,29 @@ AFireflyCharacter::AFireflyCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	m_AnimalDataMap.Add(EAnimal::Human, AnimalData(96.f, 42.f, 600.f, 600.f, FVector(0, 0, -94.f),
+		TEXT("SkeletalMesh'/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin'"), 
+		TEXT("AnimBlueprint'/Game/Mannequin/Animations/ThirdPerson_AnimBP.ThirdPerson_AnimBP'")));
+	m_AnimalDataMap.Add(EAnimal::Fox, AnimalData(67.f, 67.f, 800.f, 700.f, FVector(-12.f, 0, -57.f),
+		TEXT("SkeletalMesh'/Game/PolyArtFox/Meshes/SK_Mane_Wolf.SK_Mane_Wolf'"),
+		TEXT("")));
+	m_AnimalDataMap.Add(EAnimal::Rabbit, AnimalData(29.f, 29.f, 500.f, 800.f, FVector(-12.f, 0, -30.f),
+		TEXT("SkeletalMesh'/Game/Rabbit/Meshes/Poly_Art/SK_PA_Rabbit_Common.SK_PA_Rabbit_Common'"),
+		TEXT("")));
+	for (const auto& pair : m_AnimalDataMap) {
+		ConstructorHelpers::FObjectFinder<USkeletalMesh> ModelPath(*pair.Value.SkeletalMesh);
+		m_SkeletalMeshMap.Add(pair.Key, ModelPath.Object);
+		if (pair.Value.AnimBlueprint == TEXT("")) {
+			continue;
+		}
+		ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBP(*pair.Value.AnimBlueprint);
+		m_AnimBPMap.Add(pair.Key, AnimBP.Object);
+	}
 }
-
+void AFireflyCharacter::BeginPlay() {
+	Super::BeginPlay();
+	TransformTo(EAnimal::Rabbit);
+}
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -56,6 +77,7 @@ void AFireflyCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("Transform", IE_Pressed, this, &AFireflyCharacter::RandomTransform);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFireflyCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AFireflyCharacter::MoveRight);
@@ -76,6 +98,9 @@ void AFireflyCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AFireflyCharacter::OnResetVR);
 }
 
+void AFireflyCharacter::RandomTransform() {
+	TransformTo((EAnimal)FMath::RandRange(0, 2));
+}
 
 void AFireflyCharacter::OnResetVR()
 {
@@ -131,4 +156,18 @@ void AFireflyCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void AFireflyCharacter::TransformTo(EAnimal eAnimal) {
+	m_eAnimal = eAnimal;
+	GetCapsuleComponent()->SetCapsuleSize(m_AnimalDataMap[eAnimal].CapsuleRadius, m_AnimalDataMap[eAnimal].CapsuleHeight);
+	GetCharacterMovement()->MaxWalkSpeed = m_AnimalDataMap[eAnimal].MaxMoveSpeed;
+	GetCharacterMovement()->JumpZVelocity = m_AnimalDataMap[eAnimal].JumpVelocity;
+	GetMesh()->SetSkeletalMesh(m_SkeletalMeshMap[eAnimal]);
+	GetMesh()->SetRelativeLocation(m_AnimalDataMap[eAnimal].MeshOffset);
+	if (!m_AnimBPMap.Contains(eAnimal)) {
+		GetMesh()->SetAnimInstanceClass(nullptr);
+		return;
+	}
+	GetMesh()->SetAnimInstanceClass(m_AnimBPMap[eAnimal]->GeneratedClass);
 }

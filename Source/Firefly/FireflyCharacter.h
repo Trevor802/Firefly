@@ -6,6 +6,26 @@
 #include "GameFramework/Character.h"
 #include "FireflyCharacter.generated.h"
 
+class AnimalData {
+public:
+	AnimalData(float radius, float height, float speed, float jumpVelocity, FVector meshOffset, const FString& mesh, const FString& animBP) {
+		CapsuleRadius = radius;
+		CapsuleHeight = height;
+		MaxMoveSpeed = speed;
+		JumpVelocity = jumpVelocity;
+		MeshOffset = meshOffset;
+		SkeletalMesh = mesh;
+		AnimBlueprint = animBP;
+	}
+	float CapsuleRadius;
+	float CapsuleHeight;
+	float MaxMoveSpeed;
+	float JumpVelocity;
+	FVector MeshOffset;
+	FString SkeletalMesh;
+	FString AnimBlueprint;
+};
+
 UCLASS(config=Game)
 class AFireflyCharacter : public ACharacter
 {
@@ -20,6 +40,8 @@ class AFireflyCharacter : public ACharacter
 	class UCameraComponent* FollowCamera;
 public:
 	AFireflyCharacter();
+	
+	virtual void BeginPlay() override;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -28,7 +50,12 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
-
+	
+	enum class EAnimal {
+		Human	= 0,
+		Fox		= 1,
+		Rabbit	= 2
+	};
 protected:
 
 	/** Resets HMD orientation in VR. */
@@ -57,13 +84,24 @@ protected:
 
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
+	
+	void RandomTransform();
+
+	void TransformTo(EAnimal);
 
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+private:
+	TMap<EAnimal, AnimalData> m_AnimalDataMap;
+	TMap<EAnimal, USkeletalMesh*> m_SkeletalMeshMap;
+	TMap<EAnimal, UAnimBlueprint*> m_AnimBPMap;
+	EAnimal m_eAnimal;
+
 public:
+	static FString DefaultAnimBPPath;
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
