@@ -50,10 +50,10 @@ AFireflyCharacter::AFireflyCharacter()
 		TEXT("AnimBlueprint'/Game/Mannequin/Animations/ThirdPerson_AnimBP.ThirdPerson_AnimBP'")));
 	m_AnimalDataMap.Add(EAnimal::Fox, AnimalData(67.f, 67.f, 800.f, 700.f, FVector(-12.f, 0, -57.f),
 		TEXT("SkeletalMesh'/Game/PolyArtFox/Meshes/SK_Mane_Wolf.SK_Mane_Wolf'"),
-		TEXT("")));
+		TEXT("AnimBlueprint'/Game/Xiubo/Fox_AnimBP.Fox_AnimBP'")));
 	m_AnimalDataMap.Add(EAnimal::Rabbit, AnimalData(29.f, 29.f, 500.f, 800.f, FVector(-12.f, 0, -30.f),
 		TEXT("SkeletalMesh'/Game/Rabbit/Meshes/Poly_Art/SK_PA_Rabbit_Common.SK_PA_Rabbit_Common'"),
-		TEXT("")));
+		TEXT("AnimBlueprint'/Game/Xiubo/Rabit_AnimBP.Rabit_AnimBP'")));
 	for (const auto& pair : m_AnimalDataMap) {
 		ConstructorHelpers::FObjectFinder<USkeletalMesh> ModelPath(*pair.Value.SkeletalMesh);
 		m_SkeletalMeshMap.Add(pair.Key, ModelPath.Object);
