@@ -45,10 +45,10 @@ AFireflyCharacter::AFireflyCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
-	m_AnimalDataMap.Add(EAnimal::Human, AnimalData(96.f, 42.f, 600.f, 600.f, FVector(0, 0, -94.f),
+	m_AnimalDataMap.Add(EAnimal::Human, AnimalData(42.f, 96.f, 600.f, 600.f, FVector(0, 0, -94.f),
 		TEXT("SkeletalMesh'/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin'"), 
 		TEXT("AnimBlueprint'/Game/Mannequin/Animations/ThirdPerson_AnimBP.ThirdPerson_AnimBP'")));
-	m_AnimalDataMap.Add(EAnimal::Fox, AnimalData(67.f, 67.f, 800.f, 700.f, FVector(-12.f, 0, -57.f),
+	m_AnimalDataMap.Add(EAnimal::Fox, AnimalData(80.f, 80.f, 800.f, 700.f, FVector(-12.f, 0, -70.f),
 		TEXT("SkeletalMesh'/Game/PolyArtFox/Meshes/SK_Mane_Wolf.SK_Mane_Wolf'"),
 		TEXT("AnimBlueprint'/Game/Xiubo/Fox_AnimBP.Fox_AnimBP'")));
 	m_AnimalDataMap.Add(EAnimal::Rabbit, AnimalData(29.f, 29.f, 500.f, 800.f, FVector(-12.f, 0, -30.f),
@@ -63,10 +63,22 @@ AFireflyCharacter::AFireflyCharacter()
 		ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBP(*pair.Value.AnimBlueprint);
 		m_AnimBPMap.Add(pair.Key, AnimBP.Object);
 	}
+	TransformTo(DefaultAnimal);
 }
+#if WITH_EDITOR
+void AFireflyCharacter::PostEditChangeProperty(struct FPropertyChangedEvent& e) {
+	Super::PostEditChangeProperty(e);
+	FName propertyName = (e.Property != NULL) ? e.Property->GetFName() : NAME_None;
+	if (propertyName == GET_MEMBER_NAME_CHECKED(AFireflyCharacter, DefaultAnimal)) {
+		UE_LOG(LogTemp, Warning, TEXT("Animal Changed"));
+		TransformTo(DefaultAnimal);
+	}
+}
+#endif
+
 void AFireflyCharacter::BeginPlay() {
 	Super::BeginPlay();
-	TransformTo(EAnimal::Rabbit);
+	TransformTo(DefaultAnimal);
 }
 //////////////////////////////////////////////////////////////////////////
 // Input

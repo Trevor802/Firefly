@@ -25,6 +25,12 @@ public:
 	FString SkeletalMesh;
 	FString AnimBlueprint;
 };
+UENUM()
+enum class EAnimal : uint8 {
+	Human	UMETA(DisplayName = "Human"),
+	Fox		UMETA(DisplayName = "Fox"),
+	Rabbit	UMETA(DisplayName = "Rabbit")
+};
 
 UCLASS(config=Game)
 class AFireflyCharacter : public ACharacter
@@ -40,6 +46,8 @@ class AFireflyCharacter : public ACharacter
 	class UCameraComponent* FollowCamera;
 public:
 	AFireflyCharacter();
+
+	void PostEditChangeProperty(FPropertyChangedEvent& e);
 	
 	virtual void BeginPlay() override;
 
@@ -50,12 +58,7 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
-	
-	enum class EAnimal {
-		Human	= 0,
-		Fox		= 1,
-		Rabbit	= 2
-	};
+
 protected:
 
 	/** Resets HMD orientation in VR. */
@@ -88,7 +91,9 @@ protected:
 	void RandomTransform();
 
 	void TransformTo(int32);
-	void TransformTo(EAnimal);
+
+	UFUNCTION(BlueprintCallable, CallInEditor)
+	void TransformTo(EAnimal eAnimal);
 
 protected:
 	// APawn interface
@@ -103,6 +108,8 @@ private:
 
 public:
 	static FString DefaultAnimBPPath;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EAnimal DefaultAnimal;
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
