@@ -78,6 +78,9 @@ void AFireflyCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAction("Transform", IE_Pressed, this, &AFireflyCharacter::RandomTransform);
+	PlayerInputComponent->BindAction<FCharacterChangedSignature>("TransformToHuman", IE_Pressed, this, &AFireflyCharacter::TransformTo, 0);
+	PlayerInputComponent->BindAction<FCharacterChangedSignature>("TransformToFox", IE_Pressed, this, &AFireflyCharacter::TransformTo, 1);
+	PlayerInputComponent->BindAction<FCharacterChangedSignature>("TransformToRabbit", IE_Pressed, this, &AFireflyCharacter::TransformTo, 2);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFireflyCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AFireflyCharacter::MoveRight);
@@ -156,6 +159,10 @@ void AFireflyCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void AFireflyCharacter::TransformTo(int32 animalID) {
+	TransformTo((EAnimal)animalID);
 }
 
 void AFireflyCharacter::TransformTo(EAnimal eAnimal) {

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "FireflyCharacter.generated.h"
-
+DECLARE_DELEGATE_OneParam(FCharacterChangedSignature, int32);
 class AnimalData {
 public:
 	AnimalData(float radius, float height, float speed, float jumpVelocity, FVector meshOffset, const FString& mesh, const FString& animBP) {
@@ -87,6 +87,7 @@ protected:
 	
 	void RandomTransform();
 
+	void TransformTo(int32);
 	void TransformTo(EAnimal);
 
 protected:
