@@ -92,8 +92,9 @@ protected:
 
 	void TransformTo(int32);
 
-	UFUNCTION(BlueprintCallable, CallInEditor)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, CallInEditor)
 	void TransformTo(EAnimal eAnimal);
+	void TrnasformTo_Implementation(EAnimal eAnimal);
 
 protected:
 	// APawn interface

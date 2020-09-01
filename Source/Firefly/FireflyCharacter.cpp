@@ -63,7 +63,7 @@ AFireflyCharacter::AFireflyCharacter()
 		ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBP(*pair.Value.AnimBlueprint);
 		m_AnimBPMap.Add(pair.Key, AnimBP.Object);
 	}
-	TransformTo(DefaultAnimal);
+	//TransformTo(DefaultAnimal);
 }
 #if WITH_EDITOR
 void AFireflyCharacter::PostEditChangeProperty(struct FPropertyChangedEvent& e) {
@@ -177,7 +177,7 @@ void AFireflyCharacter::TransformTo(int32 animalID) {
 	TransformTo((EAnimal)animalID);
 }
 
-void AFireflyCharacter::TransformTo(EAnimal eAnimal) {
+void AFireflyCharacter::TransformTo_Implementation(EAnimal eAnimal) {
 	m_eAnimal = eAnimal;
 	GetCapsuleComponent()->SetCapsuleSize(m_AnimalDataMap[eAnimal].CapsuleRadius, m_AnimalDataMap[eAnimal].CapsuleHeight);
 	GetCharacterMovement()->MaxWalkSpeed = m_AnimalDataMap[eAnimal].MaxMoveSpeed;
