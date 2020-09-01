@@ -100,6 +100,8 @@ protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE EAnimal GetAnimal() const { return m_eAnimal; }
 
 private:
 	TMap<EAnimal, AnimalData> m_AnimalDataMap;

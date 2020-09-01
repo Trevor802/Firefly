@@ -8,6 +8,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Camera/PlayerCameraManager.h"
+#include "Kismet/GameplayStatics.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AFireflyCharacter
@@ -63,7 +65,6 @@ AFireflyCharacter::AFireflyCharacter()
 		ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBP(*pair.Value.AnimBlueprint);
 		m_AnimBPMap.Add(pair.Key, AnimBP.Object);
 	}
-	//TransformTo(DefaultAnimal);
 }
 #if WITH_EDITOR
 void AFireflyCharacter::PostEditChangeProperty(struct FPropertyChangedEvent& e) {
@@ -149,9 +150,9 @@ void AFireflyCharacter::MoveForward(float Value)
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
 		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator Rotation = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
+		//UGameplayStatics::GetPlayerCameraManager(GetWorld(), -1)->GetCameraRotation();
 		// get forward vector
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
@@ -163,7 +164,7 @@ void AFireflyCharacter::MoveRight(float Value)
 	if ( (Controller != NULL) && (Value != 0.0f) )
 	{
 		// find out which way is right
-		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator Rotation = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 	
 		// get right vector 
