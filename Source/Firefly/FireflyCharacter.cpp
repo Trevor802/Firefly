@@ -48,8 +48,8 @@ AFireflyCharacter::AFireflyCharacter()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 	m_AnimalDataMap.Add(EAnimal::Human, AnimalData(42.f, 96.f, 600.f, 600.f, FVector(0, 0, -94.f),
-		TEXT("SkeletalMesh'/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin'"), 
-		TEXT("AnimBlueprint'/Game/Mannequin/Animations/ThirdPerson_AnimBP.ThirdPerson_AnimBP'")));
+		TEXT("SkeletalMesh'/Game/EinFantasyWizard/Characters/Meshes/Kid_Wizard_001.Kid_Wizard_001'"),  
+		TEXT("AnimBlueprint'/Game/Xiubo/Kid_AnimBP.Kid_AnimBP'")));
 	m_AnimalDataMap.Add(EAnimal::Fox, AnimalData(80.f, 80.f, 800.f, 700.f, FVector(-12.f, 0, -70.f),
 		TEXT("SkeletalMesh'/Game/PolyArtFox/Meshes/SK_Mane_Wolf.SK_Mane_Wolf'"),
 		TEXT("AnimBlueprint'/Game/Xiubo/Fox_AnimBP.Fox_AnimBP'")));
