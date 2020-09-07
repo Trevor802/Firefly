@@ -6,25 +6,6 @@
 #include "GameFramework/Character.h"
 #include "FireflyCharacter.generated.h"
 DECLARE_DELEGATE_OneParam(FCharacterChangedSignature, int32);
-class AnimalData {
-public:
-	AnimalData(float radius, float height, float speed, float jumpVelocity, FVector meshOffset, const FString& mesh, const FString& animBP) {
-		CapsuleRadius = radius;
-		CapsuleHeight = height;
-		MaxMoveSpeed = speed;
-		JumpVelocity = jumpVelocity;
-		MeshOffset = meshOffset;
-		SkeletalMesh = mesh;
-		AnimBlueprint = animBP;
-	}
-	float CapsuleRadius;
-	float CapsuleHeight;
-	float MaxMoveSpeed;
-	float JumpVelocity;
-	FVector MeshOffset;
-	FString SkeletalMesh;
-	FString AnimBlueprint;
-};
 UENUM()
 enum class EAnimal : uint8 {
 	Human	UMETA(DisplayName = "Human"),
@@ -32,6 +13,37 @@ enum class EAnimal : uint8 {
 	Rabbit	UMETA(DisplayName = "Rabbit")
 };
 
+USTRUCT(BlueprintType)
+struct FAnimalData {
+	GENERATED_USTRUCT_BODY();
+public:
+	FAnimalData() {}
+	FAnimalData(float radius, float height, float speed, float jumpVelocity, FVector meshOffset) {
+		CapsuleRadius = radius;
+		CapsuleHeight = height;
+		MaxMoveSpeed = speed;
+		JumpVelocity = jumpVelocity;
+		MeshOffset = meshOffset;
+	}	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animal")
+	float CapsuleRadius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animal")
+	float CapsuleHeight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animal")
+	float MaxMoveSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animal")
+	float JumpVelocity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animal")
+	float AirControl;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animal")
+	FVector MeshOffset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animal")
+	USkeletalMesh* SM;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animal")
+	UClass* AnimBP;
+	/*FString SkeletalMesh;
+	FString AnimBlueprint;*/
+};
 UCLASS(config=Game)
 class AFireflyCharacter : public ACharacter
 {
@@ -104,12 +116,14 @@ protected:
 	FORCEINLINE EAnimal GetAnimal() const { return m_eAnimal; }
 
 private:
-	TMap<EAnimal, AnimalData> m_AnimalDataMap;
+	TMap<EAnimal, FAnimalData> m_AnimalDataMap;
 	TMap<EAnimal, USkeletalMesh*> m_SkeletalMeshMap;
 	TMap<EAnimal, UAnimBlueprint*> m_AnimBPMap;
 	EAnimal m_eAnimal;
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animal")
+	TArray<FAnimalData> AnimalDataArray;
 	static FString DefaultAnimBPPath;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EAnimal DefaultAnimal;
