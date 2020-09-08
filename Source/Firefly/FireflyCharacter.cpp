@@ -47,13 +47,13 @@ AFireflyCharacter::AFireflyCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
-	m_AnimalDataMap.Add(EAnimal::Human, AnimalData(42.f, 96.f, 600.f, 600.f, FVector(0, 0, -94.f),
-		TEXT("SkeletalMesh'/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin'"), 
-		TEXT("AnimBlueprint'/Game/Mannequin/Animations/ThirdPerson_AnimBP.ThirdPerson_AnimBP'")));
-	m_AnimalDataMap.Add(EAnimal::Fox, AnimalData(80.f, 80.f, 800.f, 700.f, FVector(-12.f, 0, -70.f),
+	/*m_AnimalDataMap.Add(EAnimal::Human, FAnimalData(42.f, 96.f, 600.f, 600.f, FVector(0, 0, -94.f),
+		TEXT("SkeletalMesh'/Game/EinFantasyWizard/Characters/Meshes/Kid_Wizard_001.Kid_Wizard_001'"),  
+		TEXT("AnimBlueprint'/Game/Xiubo/Kid_AnimBP.Kid_AnimBP'")));
+	m_AnimalDataMap.Add(EAnimal::Fox, FAnimalData(80.f, 80.f, 800.f, 700.f, FVector(-12.f, 0, -70.f),
 		TEXT("SkeletalMesh'/Game/PolyArtFox/Meshes/SK_Mane_Wolf.SK_Mane_Wolf'"),
 		TEXT("AnimBlueprint'/Game/Xiubo/Fox_AnimBP.Fox_AnimBP'")));
-	m_AnimalDataMap.Add(EAnimal::Rabbit, AnimalData(29.f, 29.f, 500.f, 800.f, FVector(-12.f, 0, -30.f),
+	m_AnimalDataMap.Add(EAnimal::Rabbit, FAnimalData(29.f, 29.f, 500.f, 800.f, FVector(-12.f, 0, -30.f),
 		TEXT("SkeletalMesh'/Game/Rabbit/Meshes/Poly_Art/SK_PA_Rabbit_Common.SK_PA_Rabbit_Common'"),
 		TEXT("AnimBlueprint'/Game/Xiubo/Rabit_AnimBP.Rabit_AnimBP'")));
 	for (const auto& pair : m_AnimalDataMap) {
@@ -64,7 +64,7 @@ AFireflyCharacter::AFireflyCharacter()
 		}
 		ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBP(*pair.Value.AnimBlueprint);
 		m_AnimBPMap.Add(pair.Key, AnimBP.Object);
-	}
+	}*/
 }
 #if WITH_EDITOR
 void AFireflyCharacter::PostEditChangeProperty(struct FPropertyChangedEvent& e) {
@@ -180,14 +180,15 @@ void AFireflyCharacter::TransformTo(int32 animalID) {
 
 void AFireflyCharacter::TransformTo_Implementation(EAnimal eAnimal) {
 	m_eAnimal = eAnimal;
-	GetCapsuleComponent()->SetCapsuleSize(m_AnimalDataMap[eAnimal].CapsuleRadius, m_AnimalDataMap[eAnimal].CapsuleHeight);
-	GetCharacterMovement()->MaxWalkSpeed = m_AnimalDataMap[eAnimal].MaxMoveSpeed;
-	GetCharacterMovement()->JumpZVelocity = m_AnimalDataMap[eAnimal].JumpVelocity;
-	GetMesh()->SetSkeletalMesh(m_SkeletalMeshMap[eAnimal]);
-	GetMesh()->SetRelativeLocation(m_AnimalDataMap[eAnimal].MeshOffset);
-	if (!m_AnimBPMap.Contains(eAnimal)) {
+	GetCapsuleComponent()->SetCapsuleSize(AnimalDataArray[(int)eAnimal].CapsuleRadius, AnimalDataArray[(int)eAnimal].CapsuleHeight);
+	GetCharacterMovement()->MaxWalkSpeed = AnimalDataArray[(int)eAnimal].MaxMoveSpeed;
+	GetCharacterMovement()->JumpZVelocity = AnimalDataArray[(int)eAnimal].JumpVelocity;
+	GetCharacterMovement()->AirControl = AnimalDataArray[(int)eAnimal].AirControl;
+	GetMesh()->SetSkeletalMesh(AnimalDataArray[(int)eAnimal].SM);
+	GetMesh()->SetRelativeLocation(AnimalDataArray[(int)eAnimal].MeshOffset);
+	/*if (!m_AnimBPMap.Contains(eAnimal)) {
 		GetMesh()->SetAnimInstanceClass(nullptr);
 		return;
-	}
-	GetMesh()->SetAnimInstanceClass(m_AnimBPMap[eAnimal]->GeneratedClass);
+	}*/
+	GetMesh()->SetAnimInstanceClass(AnimalDataArray[(int)eAnimal].AnimBP);
 }
